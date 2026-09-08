@@ -78,7 +78,7 @@ function onTouchEnd(e) {
 
 .word-fade-enter-active,
 .word-fade-leave-active {
-  transition: opacity 0.18s ease, transform 0.18s ease;
+  transition: opacity 0.1s ease, transform 0.1s ease;
 }
 
 .word-fade-leave-to {

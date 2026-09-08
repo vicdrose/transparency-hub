@@ -34,7 +34,7 @@ defineProps({
 }
 
 .floating-logo__wrap {
-  animation: flogo-bob 3.2s ease-in-out infinite;
+  animation: flogo-bob 0.6s ease-in-out infinite;
 }
 
 .floating-logo__img {
@@ -48,25 +48,25 @@ defineProps({
 
 .flogo-swap-enter-active,
 .flogo-swap-leave-active {
-  transition: opacity 0.28s ease, transform 0.28s ease;
+  transition: opacity 0.12s ease, transform 0.12s ease;
 }
 
 .flogo-swap-leave-to {
   opacity: 0;
-  transform: translateX(-14px) scale(0.96);
+  transform: translateX(-8px) scale(0.97);
 }
 
 .flogo-swap-enter-from {
   opacity: 0;
-  transform: translateX(14px) scale(0.96);
+  transform: translateX(8px) scale(0.97);
 }
 
 @keyframes flogo-bob {
   0%, 100% {
-    transform: translateY(0) rotate(-1.2deg);
+    transform: translateY(0) rotate(-1.4deg);
   }
   50% {
-    transform: translateY(-9px) rotate(1.2deg);
+    transform: translateY(-10px) rotate(1.4deg);
   }
 }
 </style>

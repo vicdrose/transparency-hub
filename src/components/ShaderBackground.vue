@@ -70,12 +70,14 @@ const FRAG = `
     float f = fbm(p * 2.2);
     float f2 = fbm(p * 3.5 + vec2(f * 0.4, f * 0.3) + uTime * 0.05);
 
-    vec3 col = mix(uColorA, uColorB, smoothstep(0.0, 0.7, f));
-    col = mix(col, uColorC, smoothstep(0.15, 0.75, f2));
-    col = mix(col, uColorD, smoothstep(0.35, 0.95, f * 0.6 + f2 * 0.4));
+    // Lead with the two bright palette colors; keep everything luminous
+    // so each product's palette is clearly distinguishable.
+    vec3 col = mix(uColorA, uColorB, smoothstep(0.1, 0.8, f));
+    col = mix(col, uColorC, smoothstep(0.25, 0.9, f2) * 0.55);
+    col = mix(col, uColorD, smoothstep(0.75, 1.0, f * 0.5 + f2 * 0.5) * 0.35);
 
-    float vig = smoothstep(1.5, 0.35, length(uv - 0.5) * 1.25);
-    col *= mix(0.55, 1.0, vig);
+    float vig = smoothstep(1.4, 0.25, length(uv - 0.5) * 1.15);
+    col *= mix(0.7, 1.05, vig);
 
     gl_FragColor = vec4(col, 1.0);
   }
@@ -104,7 +106,7 @@ watch(
     const swatch = [uA, uB, uC, uD].map((v) => v.clone());
     const target = palette.map(hexToRgb);
     const started = Date.now();
-    const dur = 700;
+    const dur = 200;
 
     function step() {
       const t = Math.min(1, (Date.now() - started) / dur);

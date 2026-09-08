@@ -43,7 +43,7 @@ const products = [
     name: 'Hangout',
     url: 'https://vicdrose.github.io/hangout/',
     logo: `${base}logos/hangout.png`,
-    palette: ['#ff5e9c', '#7c3aed', '#b78cff', '#2b1055'],
+    palette: ['#4fc3f7', '#29b6f6', '#2878a0', '#0b1b2a'],
     blurb: 'Step into a shared social space. Chat, vibe, and connect in real time.',
     preview: null,
     audio: null
@@ -53,7 +53,7 @@ const products = [
     name: 'Freestyle King',
     url: 'https://vicdrose.github.io/freestyleking/',
     logo: `${base}logos/freestyleking.png`,
-    palette: ['#38bdf8', '#1e63f0', '#7dd3fc', '#0b1f4a'],
+    palette: ['#ffd54f', '#f0c800', '#c8a000', '#3a2c00'],
     blurb: 'The ultimate freestyle wordplay arena. Drop bars, build flows, compete.',
     preview: null,
     audio: null
@@ -63,7 +63,7 @@ const products = [
     name: 'Astro Beats',
     url: 'https://vicdrose.github.io/astrobeats/',
     logo: `${base}logos/astrobeats.png`,
-    palette: ['#a78bfa', '#4c1d95', '#ffd166', '#1a1130'],
+    palette: ['#b492ff', '#8a5cf0', '#5a2ea8', '#160824'],
     blurb: 'Where astrology meets music. Your birth chart, your soundtrack.',
     preview: null,
     audio: null
@@ -73,7 +73,7 @@ const products = [
     name: 'Snack Run',
     url: 'https://vicdrose.github.io/delivery-sim/',
     logo: `${base}logos/snackrun.png`,
-    palette: ['#ff9b3d', '#ef4444', '#ffd166', '#4a1208'],
+    palette: ['#ffb347', '#f08818', '#c96a00', '#1f1200'],
     blurb: 'Low-poly delivery driving mayhem. Pick up, drop off, don\'t crash.',
     preview: null,
     audio: null
