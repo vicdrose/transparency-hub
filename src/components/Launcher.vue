@@ -1,5 +1,6 @@
 <template>
   <div class="launcher">
+    <SmokeCloud />
     <StarField :palette="currentProduct.palette" />
 
     <div class="launcher__content">
@@ -34,6 +35,7 @@
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue';
+import SmokeCloud from './SmokeCloud.vue';
 import StarField from './StarField.vue';
 import FloatingLogo from './FloatingLogo.vue';
 import NavBar from './NavBar.vue';
