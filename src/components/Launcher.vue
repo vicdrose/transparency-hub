@@ -1,6 +1,7 @@
 <template>
   <div class="launcher">
     <ShaderBackground :palette="currentProduct.palette" />
+    <StarField />
 
     <div class="launcher__content">
       <div class="launcher__stage" @touchstart.passive="onTouchStart" @touchend.passive="onTouchEnd">
@@ -30,6 +31,7 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue';
 import ShaderBackground from './ShaderBackground.vue';
+import StarField from './StarField.vue';
 import FloatingLogo from './FloatingLogo.vue';
 import NavBar from './NavBar.vue';
 import TransitionOverlay from './TransitionOverlay.vue';
@@ -150,7 +152,7 @@ onUnmounted(() => {
 
 .launcher__content {
   position: relative;
-  z-index: 1;
+  z-index: 2;
   display: flex;
   flex-direction: column;
   height: 100%;
