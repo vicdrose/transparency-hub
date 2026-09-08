@@ -89,38 +89,53 @@ function hexToRgb(hex) {
   return new THREE.Color((n >> 16) & 255, (n >> 8) & 255, n & 255).multiplyScalar(1 / 255);
 }
 
+const colorUniforms = () => [
+  material.uniforms.uColorA.value,
+  material.uniforms.uColorB.value,
+  material.uniforms.uColorC.value,
+  material.uniforms.uColorD.value
+];
+
+let transitionTween = null;
+
 function applyPalette(palette, immediate = false) {
   if (!material) return;
   const c = palette.map(hexToRgb);
+  const targets = [c[0], c[1] || c[0], c[2] || c[1] || c[0], c[3] || c[2] || c[0]];
+
   if (immediate) {
-    material.uniforms.uColorA.value.copy(c[0]);
-    material.uniforms.uColorB.value.copy(c[1] || c[0]);
-    material.uniforms.uColorC.value.copy(c[2] || c[1] || c[0]);
-    material.uniforms.uColorD.value.copy(c[3] || c[2] || c[0]);
+    targets.forEach((t, i) => colorUniforms()[i].copy(t));
+    return;
   }
+
+  // Mathematical interpolation of ALL FOUR colors, from whatever they
+  // currently are to the new palette.
+  const colors = colorUniforms();
+  const from = colors.map((c) => c.clone());
+  const started = performance.now();
+  const dur = 300;
+
+  if (transitionTween) cancelAnimationFrame(transitionTween);
+
+  function step() {
+    const t = Math.min(1, (performance.now() - started) / dur);
+    const e = 1 - Math.pow(1 - t, 3);
+    for (let i = 0; i < 4; i++) {
+      colors[i].lerpColors(from[i], targets[i], e);
+    }
+    if (t < 1) {
+      transitionTween = requestAnimationFrame(step);
+    } else {
+      transitionTween = null;
+    }
+  }
+  step();
 }
 
 watch(
   () => props.palette,
-  (palette) => {
-    const swatch = [uA, uB, uC, uD].map((v) => v.clone());
-    const target = palette.map(hexToRgb);
-    const started = Date.now();
-    const dur = 200;
-
-    function step() {
-      const t = Math.min(1, (Date.now() - started) / dur);
-      const e = 1 - Math.pow(1 - t, 3);
-      [uA, uB, uC, uD].forEach((u, i) => {
-        u.lerpColors(swatch[i], target[i], e);
-      });
-      if (t < 1) requestAnimationFrame(step);
-    }
-    step();
-  }
+  (palette) => applyPalette(palette, false)
 );
-
-let uA, uB, uC, uD;
 
 function animate() {
   rafId = requestAnimationFrame(animate);
@@ -147,20 +162,15 @@ onMounted(() => {
   camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.1, 10);
   camera.position.z = 1;
 
-  uA = new THREE.Uniform(new THREE.Color());
-  uB = new THREE.Uniform(new THREE.Color());
-  uC = new THREE.Uniform(new THREE.Color());
-  uD = new THREE.Uniform(new THREE.Color());
-
   material = new THREE.ShaderMaterial({
     vertexShader: VERT,
     fragmentShader: FRAG,
     uniforms: {
       uTime: { value: 0 },
-      uColorA: uA,
-      uColorB: uB,
-      uColorC: uC,
-      uColorD: uD
+      uColorA: { value: new THREE.Color() },
+      uColorB: { value: new THREE.Color() },
+      uColorC: { value: new THREE.Color() },
+      uColorD: { value: new THREE.Color() }
     },
     depthTest: false
   });
