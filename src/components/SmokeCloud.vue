@@ -7,10 +7,6 @@ import * as THREE from 'three';
 import { ref, defineProps, onMounted, onUnmounted } from 'vue';
 
 const props = defineProps({
-  horizon: {
-    type: Number,
-    default: 0.55
-  },
   strength: {
     type: Number,
     default: 1.0
@@ -33,8 +29,6 @@ const FRAG = `
   precision highp float;
   varying vec2 vUv;
   uniform float uTime;
-  uniform float uAspect;
-  uniform float uHorizon;
   uniform float uStrength;
   uniform vec3 uColor;
 
@@ -66,52 +60,49 @@ const FRAG = `
 
   void main() {
     vec2 uv = vUv;
+    float x0 = uv.x - 0.5;      // -0.5 left .. 0.5 right
+    float y0 = 1.0 - uv.y;      // 0 bottom .. 1 top
 
-    // below horizon -> positive (taller band), 0 at the horizon line
-    float off = (1.0 - vUv.y) - uHorizon;
-    if (off <= 0.0) {
+    // ---- layer 1: soft, local cloud-bank mask directly under the logo ----
+    float cy = 0.62 + x0 * 0.12;      // gentle ~12-degree rise with x
+    float rx = 0.27;
+    float ry = 0.10;
+    float r = length(vec2(x0 / rx, (y0 - cy) / ry));
+
+    // wispy edge so the drop-off is not a hard ellipse
+    float wobble = fbm(vec2(x0 * 8.0, y0 * 8.0) + uTime * 0.1);
+    r += (wobble - 0.5) * 0.35;
+
+    float mask = smoothstep(1.05, 0.30, r);
+    mask *= 1.0 - smoothstep(cy + 0.02, cy + 0.10, y0);   // soft fade behind/above logo
+
+    if (mask <= 0.001) {
       gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0);
       return;
     }
 
-    float h = max(off, 1e-4);
-    float dist = min(1.0 / h, 40.0);
-
-    // tilted ground plane: flat-looking surface at ~12 degrees
-    float slope = 0.21;
-    float z = dist * 1.1;
-    float x = (uv.x - 0.5) * dist * 2.4 * uAspect + z * slope;
-
-    vec2 wind = vec2(uTime * 0.4, uTime * 0.06);
-
-    vec2 p = vec2(x, z) + wind;
-    float q = fbm(p * 2.0);
-    float q2 = fbm(p * 2.0 + vec2(7.37, 2.71));
+    // ---- layer 2: smoky detail, clipped by the mask ----
+    vec2 wind = vec2(uTime * 0.35, uTime * 0.06);
+    vec2 p = vec2(x0 * 5.5, y0 * 11.0) + wind;
+    float q = fbm(p);
+    float q2 = fbm(p + vec2(7.37, 2.71));
     vec2 warp = vec2(q, q2) - 0.5;
 
-    vec2 wp = p + warp * 1.5;
-    float n = fbm(wp * 1.15);
+    vec2 wp = p + warp * 1.2;
+    float n = fbm(wp * 1.2);
 
     // elongated, streaky noise -> smell of smoke, not puffy cloud
-    float streak = fbm(vec2(wp.x * 1.7, wp.y * 0.55));
+    float streak = fbm(vec2(wp.x * 1.6, wp.y * 0.5));
     n = mix(n, streak, 0.5);
+    n = clamp(n, 0.0, 1.0);
 
-    // slowly rising tendrils
-    float wisp = fbm(p * 1.2 - vec2(0.0, uTime * 0.12));
-    n = clamp(n + wisp * 0.4, 0.0, 1.0);
+    float dens = pow(n, 1.7);
 
-    float dens = pow(n, 1.6);
+    // keep it soft: cap total opacity around 0.22
+    float alpha = clamp(dens * mask * uStrength, 0.0, 0.22);
 
-    float fogFade = smoothstep(0.004, 0.06, h);
-
-    float alpha = clamp(dens * uStrength * fogFade, 0.0, 1.0);
-    if (alpha < 0.02) {
-      gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0);
-      return;
-    }
-
-    vec3 col = mix(uColor * 0.22, uColor, n);
-    col += vec3(0.30) * smoothstep(0.5, 1.0, n * n);
+    vec3 col = mix(uColor * 0.25, uColor, dens);
+    col += vec3(0.30) * smoothstep(0.5, 1.0, dens * dens);
 
     gl_FragColor = vec4(col, alpha);
   }
@@ -123,7 +114,6 @@ function resize() {
   const w = canvas.clientWidth;
   const h = canvas.clientHeight;
   renderer.setSize(w, h, false);
-  material.uniforms.uAspect.value = w / h;
 }
 
 function animate() {
@@ -149,8 +139,6 @@ onMounted(() => {
     depthWrite: false,
     uniforms: {
       uTime: { value: 0 },
-      uAspect: { value: 1 },
-      uHorizon: { value: props.horizon },
       uStrength: { value: props.strength },
       uColor: { value: new THREE.Color(0.78, 0.82, 0.88) }
     }
