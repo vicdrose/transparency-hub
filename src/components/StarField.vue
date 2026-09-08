@@ -31,7 +31,7 @@ const VERT = `
     vOpacity = aOpacity;
     vColor = aColor;
     vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
-    gl_PointSize = aScale * (220.0 / -mvPosition.z);
+    gl_PointSize = clamp(aScale * (10.0 / max(-mvPosition.z, 0.5)), 1.0, 9.0);
     gl_Position = projectionMatrix * mvPosition;
   }
 `;
@@ -43,10 +43,9 @@ const FRAG = `
   void main() {
     vec2 c = gl_PointCoord - 0.5;
     float d = length(c);
-    float alpha = smoothstep(0.5, 0.0, d);
-    alpha *= vOpacity;
-    alpha *= 0.05;
-    if (alpha < 0.004) discard;
+    float alpha = smoothstep(0.5, 0.0, 2.0 * d);
+    alpha = clamp(alpha * vOpacity * 1.35, 0.0, 1.0);
+    if (alpha < 0.02) discard;
     gl_FragColor = vec4(vColor, alpha);
   }
 `;
@@ -68,7 +67,7 @@ function buildColors(palette) {
   const arr = new Float32Array(STAR_COUNT * 3);
   for (let i = 0; i < STAR_COUNT; i++) {
     const c = cols[(Math.random() * cols.length) | 0];
-    const shade = 0.7 + Math.random() * 0.6;
+    const shade = 0.85 + Math.random() * 0.3;
     arr[i * 3] = c.r * shade;
     arr[i * 3 + 1] = c.g * shade;
     arr[i * 3 + 2] = c.b * shade;
@@ -134,10 +133,10 @@ function resize() {
 function animate() {
   rafId = requestAnimationFrame(animate);
   const t = clock.getElapsedTime();
-  points.rotation.z = t * 0.012;
-  points.rotation.y = t * 0.008;
-  // subtle zoom drift
-  points.position.z = Math.sin(t * 0.05) * 0.3;
+  points.rotation.z = t * 0.03;
+  points.rotation.y = t * 0.02;
+  // slow zoom drift
+  points.position.z = Math.sin(t * 0.12) * 0.4;
 
   if (tween) {
     let e = Math.min((t - tween.start) / tween.dur, 1);
