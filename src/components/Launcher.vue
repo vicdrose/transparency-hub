@@ -1,6 +1,5 @@
 <template>
   <div class="launcher">
-    <ShaderBackground :palette="currentProduct.palette" />
     <StarField :palette="currentProduct.palette" />
 
     <div class="launcher__content">
@@ -35,7 +34,6 @@
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue';
-import ShaderBackground from './ShaderBackground.vue';
 import StarField from './StarField.vue';
 import FloatingLogo from './FloatingLogo.vue';
 import NavBar from './NavBar.vue';
@@ -178,6 +176,7 @@ onUnmounted(() => {
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  background: #000;
 }
 
 .launcher__content {
