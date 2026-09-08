@@ -1,5 +1,5 @@
 <template>
-  <div class="splash" :class="{ 'splash--visible': visible }">
+  <div class="splash" :class="{ 'splash--leaving': leaving }">
     <img src="/logo-ti.jpg" alt="Transparency Interactive" class="splash__logo" />
     <div class="splash__text">Transparency Interactive</div>
   </div>
@@ -9,15 +9,15 @@
 import { ref, onMounted } from 'vue';
 
 const emit = defineEmits(['done']);
-const visible = ref(false);
+const leaving = ref(false);
 
 onMounted(() => {
-  requestAnimationFrame(() => {
-    visible.value = true;
-  });
+  setTimeout(() => {
+    leaving.value = true;
+  }, 1000);
   setTimeout(() => {
     emit('done');
-  }, 2000);
+  }, 1750);
 });
 </script>
 
@@ -31,21 +31,19 @@ onMounted(() => {
   justify-content: center;
   background: #000;
   z-index: 100;
-  opacity: 0;
-  transition: opacity 0.8s ease;
+  opacity: 1;
+  transition: opacity 0.6s ease;
 }
 
-.splash--visible {
-  opacity: 1;
+.splash--leaving {
+  opacity: 0;
 }
 
 .splash__logo {
   width: min(300px, 60vw);
   height: auto;
   border-radius: 12px;
-  opacity: 0;
-  transform: scale(0.9);
-  animation: splash-logo-in 1s 0.3s ease forwards;
+  animation: splash-logo-hold 0.7s ease both;
 }
 
 .splash__text {
@@ -56,11 +54,15 @@ onMounted(() => {
   text-transform: uppercase;
   color: #fff;
   opacity: 0;
-  animation: splash-text-in 0.8s 0.8s ease forwards;
+  animation: splash-text-in 0.7s 0.15s ease forwards;
 }
 
-@keyframes splash-logo-in {
-  to {
+@keyframes splash-logo-hold {
+  0% {
+    opacity: 0.5;
+    transform: scale(1.04);
+  }
+  100% {
     opacity: 1;
     transform: scale(1);
   }
