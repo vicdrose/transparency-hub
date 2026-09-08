@@ -71,13 +71,13 @@ const FRAG = `
     float f2 = fbm(p * 3.5 + vec2(f * 0.4, f * 0.3) + uTime * 0.05);
 
     // Lead with the two bright palette colors; keep each product's palette
-    // distinguishable but on a dark, moody backdrop for the star layer.
+    // distinguishable but mostly black so the colored point cloud carries it.
     vec3 col = mix(uColorA, uColorB, smoothstep(0.1, 0.8, f));
     col = mix(col, uColorC, smoothstep(0.25, 0.9, f2) * 0.45);
     col = mix(col, uColorD, smoothstep(0.5, 1.0, f * 0.5 + f2 * 0.5) * 0.5);
 
     float vig = smoothstep(1.4, 0.2, length(uv - 0.5) * 1.1);
-    col *= mix(0.28, 0.6, vig);
+    col *= mix(0.015, 0.08, vig);
 
     gl_FragColor = vec4(col, 1.0);
   }

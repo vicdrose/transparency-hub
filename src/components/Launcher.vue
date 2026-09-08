@@ -1,9 +1,14 @@
 <template>
   <div class="launcher">
     <ShaderBackground :palette="currentProduct.palette" />
-    <StarField />
+    <StarField :palette="currentProduct.palette" />
 
     <div class="launcher__content">
+      <div class="launcher__title">
+        <span class="launcher__title-line">Transparency</span>
+        <span class="launcher__title-line">Interactive</span>
+      </div>
+
       <div class="launcher__stage" @touchstart.passive="onTouchStart" @touchend.passive="onTouchEnd">
         <FloatingLogo :product="currentProduct" />
       </div>
@@ -182,6 +187,28 @@ onUnmounted(() => {
   flex-direction: column;
   height: 100%;
   padding: 16px 20px 20px;
+}
+
+.launcher__title {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding-top: 6px;
+  user-select: none;
+  pointer-events: none;
+}
+
+.launcher__title-line {
+  font-size: clamp(16px, 3.2vw, 24px);
+  font-weight: 300;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.92);
+  text-shadow: 0 0 18px rgba(255, 255, 255, 0.25);
+  line-height: 1.15;
+  white-space: nowrap;
 }
 
 .launcher__stage {
