@@ -1,38 +1,26 @@
 <template>
-  <div
-    class="launcher"
-    :style="{ '--bg-product': currentProduct?.color || '#000' }"
-  >
-    <div class="launcher__bg" />
+  <div class="launcher">
+    <ShaderBackground :palette="currentProduct.palette" />
 
     <div class="launcher__content">
-      <PreviewArea :product="currentProduct" />
+      <div class="launcher__stage">
+        <FloatingLogo :product="currentProduct" />
+      </div>
 
-      <div class="launcher__blurb" :key="currentProduct?.id">
+      <div class="launcher__blurb" :key="currentProduct.id">
         <transition name="blurb-fade" mode="out-in">
-          <p v-if="currentProduct" :key="currentProduct.id" class="launcher__blurb-text">
+          <p :key="currentProduct.id" class="launcher__blurb-text">
             {{ currentProduct.blurb }}
           </p>
         </transition>
       </div>
 
-      <div class="launcher__carousel" ref="carouselRef">
-        <ProductCard
-          v-for="(product, i) in products"
-          :key="product.id"
-          :product="product"
-          :active="i === selectedIndex"
-          @select="selectProduct(i)"
-        />
-      </div>
-
-      <div class="launcher__hint">
-        <span class="launcher__hint-arrows">&larr; &rarr;</span>
-        <span>to browse</span>
-        <span class="launcher__hint-sep">&middot;</span>
-        <span>Enter</span>
-        <span>to launch</span>
-      </div>
+      <NavBar
+        :product="currentProduct"
+        @left="cycle(-1)"
+        @right="cycle(1)"
+        @select="selectProduct"
+      />
     </div>
 
     <TransitionOverlay :active="transitioning" />
@@ -41,63 +29,70 @@
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue';
-import PreviewArea from './PreviewArea.vue';
-import ProductCard from './ProductCard.vue';
+import ShaderBackground from './ShaderBackground.vue';
+import FloatingLogo from './FloatingLogo.vue';
+import NavBar from './NavBar.vue';
 import TransitionOverlay from './TransitionOverlay.vue';
+import { beep, selectTone, warmup } from '../lib/sound.js';
 
 const products = [
   {
     id: 'hangout',
     name: 'Hangout',
     url: 'https://vicdrose.github.io/hangout/',
-    color: '#7c3aed',
+    logo: '/logos/hangout.png',
+    palette: ['#2b1055', '#4a1a6e', '#7c3aed', '#0d0628'],
     blurb: 'Step into a shared social space. Chat, vibe, and connect in real time.',
     preview: null,
-    icon: null,
     audio: null
   },
   {
     id: 'freestyleking',
     name: 'Freestyle King',
     url: 'https://vicdrose.github.io/freestyleking/',
-    color: '#3b82f6',
+    logo: '/logos/freestyleking.png',
+    palette: ['#0b1f4a', '#16409e', '#3b82f6', '#020617'],
     blurb: 'The ultimate freestyle wordplay arena. Drop bars, build flows, compete.',
     preview: null,
-    icon: null,
     audio: null
   },
   {
     id: 'astrobeats',
     name: 'Astro Beats',
     url: 'https://vicdrose.github.io/astrobeats/',
-    color: '#6366f1',
+    logo: '/logos/astrobeats.png',
+    palette: ['#1a1130', '#3b2a7a', '#8b5cf6', '#0a0618'],
     blurb: 'Where astrology meets music. Your birth chart, your soundtrack.',
     preview: null,
-    icon: null,
     audio: null
   },
   {
     id: 'snackrun',
     name: 'Snack Run',
     url: 'https://vicdrose.github.io/delivery-sim/',
-    color: '#ef4444',
+    logo: '/logos/snackrun.png',
+    palette: ['#4a1208', '#9a2b12', '#ef6b2a', '#1c0500'],
     blurb: 'Low-poly delivery driving mayhem. Pick up, drop off, don\'t crash.',
     preview: null,
-    icon: null,
     audio: null
   }
 ];
 
 const selectedIndex = ref(0);
 const transitioning = ref(false);
-const carouselRef = ref(null);
-let touchStartX = 0;
 
 const currentProduct = computed(() => products[selectedIndex.value]);
 
-function selectProduct(index) {
+function cycle(dir) {
   if (transitioning.value) return;
-  selectedIndex.value = index;
+  beep();
+  selectedIndex.value =
+    (selectedIndex.value + dir + products.length) % products.length;
+}
+
+function selectProduct() {
+  if (transitioning.value) return;
+  selectTone();
   transitioning.value = true;
   setTimeout(() => {
     window.location.href = currentProduct.value.url;
@@ -106,45 +101,25 @@ function selectProduct(index) {
 
 function handleKeydown(e) {
   if (transitioning.value) return;
-
   if (e.key === 'ArrowRight') {
     e.preventDefault();
-    selectedIndex.value = (selectedIndex.value + 1) % products.length;
+    cycle(1);
   } else if (e.key === 'ArrowLeft') {
     e.preventDefault();
-    selectedIndex.value = (selectedIndex.value - 1 + products.length) % products.length;
-  } else if (e.key === 'Enter') {
+    cycle(-1);
+  } else if (e.key === 'Enter' || e.key === ' ') {
     e.preventDefault();
-    selectProduct(selectedIndex.value);
-  }
-}
-
-function handleTouchStart(e) {
-  touchStartX = e.touches[0].clientX;
-}
-
-function handleTouchEnd(e) {
-  if (transitioning.value) return;
-  const diff = e.changedTouches[0].clientX - touchStartX;
-  if (Math.abs(diff) > 50) {
-    if (diff < 0) {
-      selectedIndex.value = (selectedIndex.value + 1) % products.length;
-    } else {
-      selectedIndex.value = (selectedIndex.value - 1 + products.length) % products.length;
-    }
+    selectProduct();
   }
 }
 
 onMounted(() => {
   window.addEventListener('keydown', handleKeydown);
-  window.addEventListener('touchstart', handleTouchStart, { passive: true });
-  window.addEventListener('touchend', handleTouchEnd, { passive: true });
+  window.addEventListener('pointerdown', warmup, { once: true });
 });
 
 onUnmounted(() => {
   window.removeEventListener('keydown', handleKeydown);
-  window.removeEventListener('touchstart', handleTouchStart);
-  window.removeEventListener('touchend', handleTouchEnd);
 });
 </script>
 
@@ -154,21 +129,7 @@ onUnmounted(() => {
   inset: 0;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
   overflow: hidden;
-}
-
-.launcher__bg {
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(
-    ellipse at center,
-    var(--bg-product) 0%,
-    #000 70%
-  );
-  transition: background 0.6s ease;
-  z-index: 0;
 }
 
 .launcher__content {
@@ -176,25 +137,32 @@ onUnmounted(() => {
   z-index: 1;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  padding: 24px;
+  height: 100%;
+  padding: 16px 20px 20px;
 }
 
-.launcher__blurb {
-  height: 48px;
+.launcher__stage {
+  flex: 1;
+  min-height: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 24px;
+}
+
+.launcher__blurb {
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
+  flex: none;
 }
 
 .launcher__blurb-text {
-  font-size: clamp(13px, 2vw, 15px);
-  color: var(--text-muted);
+  font-size: clamp(12px, 2vw, 15px);
+  color: rgba(255, 255, 255, 0.75);
   text-align: center;
-  max-width: 420px;
+  max-width: 480px;
   line-height: 1.5;
 }
 
@@ -206,30 +174,5 @@ onUnmounted(() => {
 .blurb-fade-enter-from,
 .blurb-fade-leave-to {
   opacity: 0;
-}
-
-.launcher__carousel {
-  display: flex;
-  gap: 8px;
-  justify-content: center;
-  flex-wrap: wrap;
-}
-
-.launcher__hint {
-  margin-top: 28px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 11px;
-  color: rgba(255, 255, 255, 0.2);
-  letter-spacing: 0.05em;
-}
-
-.launcher__hint-arrows {
-  font-size: 14px;
-}
-
-.launcher__hint-sep {
-  opacity: 0.4;
 }
 </style>
