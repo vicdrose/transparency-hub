@@ -43,7 +43,6 @@ onMounted(() => {
   width: min(300px, 60vw);
   height: auto;
   border-radius: 12px;
-  animation: splash-logo-hold 0.7s ease both;
 }
 
 .splash__text {
@@ -55,17 +54,6 @@ onMounted(() => {
   color: #fff;
   opacity: 0;
   animation: splash-text-in 0.7s 0.15s ease forwards;
-}
-
-@keyframes splash-logo-hold {
-  0% {
-    opacity: 0.5;
-    transform: scale(1.04);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1);
-  }
 }
 
 @keyframes splash-text-in {
