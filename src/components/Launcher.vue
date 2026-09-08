@@ -50,7 +50,7 @@ const products = [
     name: 'Hangout',
     url: 'https://vicdrose.github.io/hangout/',
     logo: `${base}logos/hangout.png`,
-    palette: ['#4fc3f7', '#29b6f6', '#2878a0', '#0b1b2a'],
+    palette: ['#64c8fa', '#3cb4fa', '#2878aa', '#283c50'],
     blurb: 'Step into a shared social space. Chat, vibe, and connect in real time.',
     preview: null,
     audio: null
