@@ -221,12 +221,22 @@ onUnmounted(() => {
 }
 
 .launcher__blurb {
-  height: 40px;
+  max-height: 84px;
+  overflow-y: auto;
   display: flex;
   align-items: center;
   justify-content: center;
   margin-bottom: 10px;
   flex: none;
+}
+
+.launcher__blurb::-webkit-scrollbar {
+  width: 4px;
+}
+
+.launcher__blurb::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 2px;
 }
 
 .launcher__blurb-text {
@@ -235,6 +245,7 @@ onUnmounted(() => {
   text-align: center;
   max-width: 480px;
   line-height: 1.5;
+  margin: auto;
 }
 
 .blurb-fade-enter-active,

@@ -18,7 +18,7 @@ const props = defineProps({
 });
 
 const canvasRef = ref(null);
-let renderer, scene, material, rafId;
+let renderer, scene, camera, material, rafId;
 let clock = new THREE.Clock();
 
 const VERT = `
@@ -67,7 +67,8 @@ const FRAG = `
   void main() {
     vec2 uv = vUv;
 
-    float off = uv.y - uHorizon;
+    // below horizon -> positive (taller band), 0 at the horizon line
+    float off = (1.0 - vUv.y) - uHorizon;
     if (off <= 0.0) {
       gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0);
       return;
@@ -102,9 +103,8 @@ const FRAG = `
     float dens = pow(n, 1.6);
 
     float fogFade = smoothstep(0.004, 0.06, h);
-    float bottomFade = smoothstep(1.0, 0.95, uv.y);
 
-    float alpha = clamp(dens * uStrength * fogFade * bottomFade, 0.0, 1.0);
+    float alpha = clamp(dens * uStrength * fogFade, 0.0, 1.0);
     if (alpha < 0.02) {
       gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0);
       return;
@@ -129,7 +129,7 @@ function resize() {
 function animate() {
   rafId = requestAnimationFrame(animate);
   material.uniforms.uTime.value = clock.getElapsedTime();
-  renderer.render(scene, null);
+  renderer.render(scene, camera);
 }
 
 onMounted(() => {
@@ -139,6 +139,8 @@ onMounted(() => {
   renderer.setClearColor(0x000000, 0);
 
   scene = new THREE.Scene();
+  camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.1, 10);
+  camera.position.z = 1;
 
   material = new THREE.ShaderMaterial({
     vertexShader: VERT,
