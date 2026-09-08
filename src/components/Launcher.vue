@@ -108,13 +108,33 @@ function cycle(dir) {
     (selectedIndex.value + dir + products.length) % products.length;
 }
 
+let navTimer = null;
+
 function selectProduct() {
   if (transitioning.value) return;
   selectTone();
   transitioning.value = true;
-  setTimeout(() => {
+  navTimer = setTimeout(() => {
     window.location.href = currentProduct.value.url;
   }, 1200);
+}
+
+function resetTransition() {
+  if (navTimer) {
+    clearTimeout(navTimer);
+    navTimer = null;
+  }
+  if (transitioning.value) {
+    transitioning.value = false;
+  }
+}
+
+function handlePageshow(e) {
+  resetTransition();
+}
+
+function handleVisibility() {
+  if (!document.hidden) resetTransition();
 }
 
 function handleKeydown(e) {
@@ -134,10 +154,15 @@ function handleKeydown(e) {
 onMounted(() => {
   window.addEventListener('keydown', handleKeydown);
   window.addEventListener('pointerdown', warmup, { once: true });
+  window.addEventListener('pageshow', handlePageshow);
+  document.addEventListener('visibilitychange', handleVisibility);
 });
 
 onUnmounted(() => {
+  clearTimeout(navTimer);
   window.removeEventListener('keydown', handleKeydown);
+  window.removeEventListener('pageshow', handlePageshow);
+  document.removeEventListener('visibilitychange', handleVisibility);
 });
 </script>
 
