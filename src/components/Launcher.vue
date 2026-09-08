@@ -3,7 +3,7 @@
     <ShaderBackground :palette="currentProduct.palette" />
 
     <div class="launcher__content">
-      <div class="launcher__stage">
+      <div class="launcher__stage" @touchstart.passive="onTouchStart" @touchend.passive="onTouchEnd">
         <FloatingLogo :product="currentProduct" />
       </div>
 
@@ -35,13 +35,15 @@ import NavBar from './NavBar.vue';
 import TransitionOverlay from './TransitionOverlay.vue';
 import { beep, selectTone, warmup } from '../lib/sound.js';
 
+const base = import.meta.env.BASE_URL;
+
 const products = [
   {
     id: 'hangout',
     name: 'Hangout',
     url: 'https://vicdrose.github.io/hangout/',
-    logo: '/logos/hangout.png',
-    palette: ['#2b1055', '#4a1a6e', '#7c3aed', '#0d0628'],
+    logo: `${base}logos/hangout.png`,
+    palette: ['#ff5e9c', '#7c3aed', '#b78cff', '#2b1055'],
     blurb: 'Step into a shared social space. Chat, vibe, and connect in real time.',
     preview: null,
     audio: null
@@ -50,8 +52,8 @@ const products = [
     id: 'freestyleking',
     name: 'Freestyle King',
     url: 'https://vicdrose.github.io/freestyleking/',
-    logo: '/logos/freestyleking.png',
-    palette: ['#0b1f4a', '#16409e', '#3b82f6', '#020617'],
+    logo: `${base}logos/freestyleking.png`,
+    palette: ['#38bdf8', '#1e63f0', '#7dd3fc', '#0b1f4a'],
     blurb: 'The ultimate freestyle wordplay arena. Drop bars, build flows, compete.',
     preview: null,
     audio: null
@@ -60,8 +62,8 @@ const products = [
     id: 'astrobeats',
     name: 'Astro Beats',
     url: 'https://vicdrose.github.io/astrobeats/',
-    logo: '/logos/astrobeats.png',
-    palette: ['#1a1130', '#3b2a7a', '#8b5cf6', '#0a0618'],
+    logo: `${base}logos/astrobeats.png`,
+    palette: ['#a78bfa', '#4c1d95', '#ffd166', '#1a1130'],
     blurb: 'Where astrology meets music. Your birth chart, your soundtrack.',
     preview: null,
     audio: null
@@ -70,8 +72,8 @@ const products = [
     id: 'snackrun',
     name: 'Snack Run',
     url: 'https://vicdrose.github.io/delivery-sim/',
-    logo: '/logos/snackrun.png',
-    palette: ['#4a1208', '#9a2b12', '#ef6b2a', '#1c0500'],
+    logo: `${base}logos/snackrun.png`,
+    palette: ['#ff9b3d', '#ef4444', '#ffd166', '#4a1208'],
     blurb: 'Low-poly delivery driving mayhem. Pick up, drop off, don\'t crash.',
     preview: null,
     audio: null
@@ -80,8 +82,22 @@ const products = [
 
 const selectedIndex = ref(0);
 const transitioning = ref(false);
+let touchStartX = 0;
 
 const currentProduct = computed(() => products[selectedIndex.value]);
+
+function onTouchStart(e) {
+  touchStartX = e.touches[0].clientX;
+}
+
+function onTouchEnd(e) {
+  if (transitioning.value) return;
+  const diff = e.changedTouches[0].clientX - touchStartX;
+  if (Math.abs(diff) > 40) {
+    if (diff < 0) cycle(1);
+    else cycle(-1);
+  }
+}
 
 function cycle(dir) {
   if (transitioning.value) return;

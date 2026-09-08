@@ -70,12 +70,12 @@ const FRAG = `
     float f = fbm(p * 2.2);
     float f2 = fbm(p * 3.5 + vec2(f * 0.4, f * 0.3) + uTime * 0.05);
 
-    vec3 col = mix(uColorA, uColorB, smoothstep(0.2, 0.8, f));
-    col = mix(col, uColorC, smoothstep(0.3, 0.9, f2));
-    col = mix(col, uColorD, smoothstep(0.5, 1.0, f + f2 * 0.5));
+    vec3 col = mix(uColorA, uColorB, smoothstep(0.0, 0.7, f));
+    col = mix(col, uColorC, smoothstep(0.15, 0.75, f2));
+    col = mix(col, uColorD, smoothstep(0.35, 0.95, f * 0.6 + f2 * 0.4));
 
-    float vig = smoothstep(1.4, 0.3, length(uv - 0.5) * 1.3);
-    col *= vig * 0.6 + 0.4;
+    float vig = smoothstep(1.5, 0.35, length(uv - 0.5) * 1.25);
+    col *= mix(0.55, 1.0, vig);
 
     gl_FragColor = vec4(col, 1.0);
   }

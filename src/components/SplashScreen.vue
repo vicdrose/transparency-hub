@@ -1,6 +1,6 @@
 <template>
   <div class="splash" :class="{ 'splash--leaving': leaving }">
-    <img src="/logo-ti.jpg" alt="Transparency Interactive" class="splash__logo" />
+    <img :src="`${base}logo-ti.jpg`" alt="Transparency Interactive" class="splash__logo" />
     <div class="splash__text">Transparency Interactive</div>
   </div>
 </template>
@@ -8,6 +8,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 
+const base = import.meta.env.BASE_URL;
 const emit = defineEmits(['done']);
 const leaving = ref(false);
 

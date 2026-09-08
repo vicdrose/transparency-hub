@@ -1,12 +1,16 @@
 <template>
   <transition name="overlay">
     <div v-if="active" class="transition-overlay">
-      <img src="/logo-ti.jpg" alt="" class="transition-overlay__logo" />
+      <img :src="`${base}logo-ti.jpg`" alt="" class="transition-overlay__logo" />
     </div>
   </transition>
 </template>
 
 <script setup>
+import { computed } from 'vue';
+
+const base = import.meta.env.BASE_URL;
+
 defineProps({
   active: {
     type: Boolean,
