@@ -9,9 +9,9 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['logo-ti.jpg', 'favicon.svg', 'apple-touch-icon.png'],
       manifest: {
-        name: 'Transparency Hub',
-        short_name: 'Transparency',
-        description: 'Demo disc launcher for the Transparency ecosystem',
+        name: 'Transparency Portal',
+        short_name: 'Portal',
+        description: 'Transparency Portal - launcher for the Transparency ecosystem',
         theme_color: '#000000',
         background_color: '#000000',
         display: 'standalone',

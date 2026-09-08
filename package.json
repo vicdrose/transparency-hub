@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "Transparency Hub — Demo disc style launcher for the Transparency ecosystem",
+  "description": "Transparency Portal - Demo disc style launcher for the Transparency ecosystem",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
