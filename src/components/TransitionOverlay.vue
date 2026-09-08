@@ -1,7 +1,7 @@
 <template>
   <transition name="overlay">
     <div v-if="active" class="transition-overlay">
-      <img :src="`${base}logo-ti.jpg`" alt="" class="transition-overlay__logo" />
+      <img :src="`${base}logos/hangout.png`" alt="" class="transition-overlay__logo" />
     </div>
   </transition>
 </template>

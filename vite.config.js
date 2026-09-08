@@ -7,7 +7,7 @@ export default defineConfig({
     vue(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['logo-ti.jpg', 'favicon.svg', 'apple-touch-icon.png'],
+      includeAssets: ['logo-ti.jpg', 'favicon.png', 'apple-touch-icon.png'],
       manifest: {
         name: 'Transparency Portal',
         short_name: 'Portal',

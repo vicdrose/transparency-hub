@@ -1,6 +1,6 @@
 <template>
   <div class="splash" :class="{ 'splash--leaving': leaving }">
-    <img :src="`${base}logo-ti.jpg`" alt="Transparency Interactive" class="splash__logo" />
+    <img :src="`${base}logos/hangout.png`" alt="Transparency Interactive" class="splash__logo" />
     <div class="splash__text">Transparency Interactive</div>
   </div>
 </template>
