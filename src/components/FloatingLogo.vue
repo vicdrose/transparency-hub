@@ -48,7 +48,7 @@ defineProps({
 
 .flogo-swap-enter-active,
 .flogo-swap-leave-active {
-  transition: opacity 0.12s ease, transform 0.12s ease;
+  transition: none;
 }
 
 .flogo-swap-leave-to {

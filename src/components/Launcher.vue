@@ -250,7 +250,7 @@ onUnmounted(() => {
 
 .blurb-fade-enter-active,
 .blurb-fade-leave-active {
-  transition: opacity 0.2s ease;
+  transition: none;
 }
 
 .blurb-fade-enter-from,
